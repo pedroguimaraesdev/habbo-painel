@@ -1,0 +1,14 @@
+{
+  "name": "habbo-painel",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node server.js",
+    "test": "node --test",
+    "lint": "node --check src/app.js && node --check src/session.js && node --check src/ledger.js && node --check server.js && node --check api/auth.js && node --check api/data.js && node --check lib/backend.js",
+    "build": "node scripts/build.js"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
