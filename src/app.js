@@ -230,6 +230,8 @@ async function openAccount(user) {
   state = validateBackup(result.data); revision = result.revision;
   bankItems = structuredClone(state.bank?.items || []);
   $('#account-email').textContent = user.email;
+  $('#account-name').textContent = user.name || 'Conta conectada';
+  $('#welcome-title').textContent = user.name ? `Olá, ${user.name}!` : 'Sua banca, sob controle.';
   loggedIn = true; render(); updatePreviews();
   $('#login-form').reset(); $('#login-message').textContent = '';
   document.body.classList.add('authenticated');

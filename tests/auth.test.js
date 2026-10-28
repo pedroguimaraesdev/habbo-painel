@@ -94,3 +94,24 @@ test('troca de conta entre abas impede salvar registros da conta anterior', asyn
   const calls = setup([{ body: user }]); const request = req('PUT', { body: { data: empty, revision: 0, userId: 'outra-conta' } }); request.headers.cookie = 'banca_access=access-test';
   const response = res(); await data(request, response); assert.equal(response.statusCode, 409); assert.equal(calls.length, 1);
 });
+
+test('login e consulta de sessão retornam nome dos metadados sem expor outros campos', async () => {
+  const namedUser = { ...user, user_metadata: { full_name: '  Pedro  ', internal: 'privado' } };
+  setup([{ body: { ...session, user: namedUser } }]);
+  const login = res();
+  await auth(req('POST', { body: { email: user.email, password: 'senha-de-teste' } }), login);
+  assert.deepEqual(login.data, { user: { ...user, name: 'Pedro' } });
+  setup([{ body: namedUser }]);
+  const current = res();
+  await auth(req('GET', { headers: { cookie: 'banca_access=access-test' } }), current);
+  assert.deepEqual(current.data, login.data);
+});
+
+test('nome aceita campo alternativo e ignora metadados de tipo inválido', async () => {
+  for (const [metadata, name] of [[{ full_name: 123, name: 'Ana' }, 'Ana'], [{ full_name: ' ', name: {} }, undefined]]) {
+    setup([{ body: { ...user, user_metadata: metadata } }]);
+    const response = res();
+    await auth(req('GET', { headers: { cookie: 'banca_access=access-test' } }), response);
+    assert.deepEqual(response.data.user, { ...user, ...(name ? { name } : {}) });
+  }
+});

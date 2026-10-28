@@ -9,6 +9,22 @@ Painel de entradas, saídas e capital inicial em moedas, reais e mobis com login
 3. Em Authentication → Users, use Add user → Create new user para criar sua conta com e-mail e senha e confirmação de e-mail. Outras contas terão bancas independentes, sem compartilhamento.
 4. Obtenha a URL do projeto e a chave pública publishable ou anon legada. Não use chave secret nem service_role, que podem ignorar as políticas RLS.
 
+## Nome de cada usuário
+
+O painel mostra uma saudação e o nome da conta usando `user_metadata.full_name` (ou `name`) do Supabase. Contas sem nome continuam funcionando com a saudação padrão e o e-mail. O nome serve somente para exibição.
+
+Para definir o nome de uma conta existente, execute no SQL Editor do Supabase, substituindo o nome e o e-mail pelos valores da conta:
+
+```sql
+update auth.users
+set raw_user_meta_data = coalesce(raw_user_meta_data, '{}'::jsonb)
+  || jsonb_build_object('full_name', 'Pedro')
+where email = 'usuario@example.com'
+returning id, email, raw_user_meta_data->>'full_name' as nome;
+```
+
+O comando preserva os demais metadados. Atualize a página do painel depois de salvar. Referência: [metadados de usuários no Supabase](https://supabase.com/docs/guides/auth/managing-user-data).
+
 ## Hospedar na Vercel
 
 Importe o repositório na Vercel. O `vercel.json` define preset Other, build `npm run build` e saída `dist`. As funções de `api/` executam no servidor da Vercel.

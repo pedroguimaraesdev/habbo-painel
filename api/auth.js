@@ -1,10 +1,15 @@
 import { remote, setSession, cookies, protect, body, authenticate, json, failure, HttpError } from '../lib/backend.js';
+function publicUser(user) {
+  const name = [user.user_metadata?.full_name, user.user_metadata?.name]
+    .find(value => typeof value === 'string' && value.trim());
+  return { id: user.id, email: user.email, ...(name ? { name: name.trim().slice(0, 80) } : {}) };
+}
 export default async function handler(req, res) {
   try {
     protect(req, res, ['GET', 'POST', 'DELETE']);
     if (req.method === 'GET') {
       const { user } = await authenticate(req, res);
-      return json(res, 200, { user: { id: user.id, email: user.email } });
+      return json(res, 200, { user: publicUser(user) });
     }
     if (req.method === 'DELETE') {
       const token = cookies(req).banca_access;
@@ -20,6 +25,6 @@ export default async function handler(req, res) {
     try { session = await remote('/auth/v1/token?grant_type=password', { method: 'POST', body: { email: input.email.trim(), password: input.password } }); }
     catch (error) { if ([400, 401].includes(error.status)) throw new HttpError(401, 'E-mail ou senha inválidos.'); throw error; }
     setSession(res, session);
-    json(res, 200, { user: { id: session.user.id, email: session.user.email } });
+    json(res, 200, { user: publicUser(session.user) });
   } catch (error) { failure(res, error); }
 }
