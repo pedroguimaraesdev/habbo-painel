@@ -1,6 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" shape-rendering="crispEdges">
   <title>H do Painel Habbo</title>
-  <rect width="32" height="32" rx="6" fill="#080f26"/>
   <path d="M6 5h8v8h4V5h8v23h-8v-8h-4v8H6z" fill="#080808"/>
   <path d="M8 7h4v8h8V7h4v19h-4v-8h-8v8H8z" fill="#f7bf24"/>
   <path d="M8 7h4v2H8zm12 0h4v2h-4zm-8 8h8v2h-8z" fill="#fff28a"/>
